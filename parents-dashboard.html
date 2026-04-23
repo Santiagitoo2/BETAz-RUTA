@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👪 Panel Parental - Rutas Seguras</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #0066CC, #00d2ff); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 20px; padding: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        h1 { color: #0066CC; margin-bottom: 20px; }
+        .info { background: #d4edda; padding: 15px; border-radius: 10px; margin: 20px 0; }
+        .btn { background: linear-gradient(135deg, #0066CC, #00d2ff); color: white; padding: 10px 20px; border: none; border-radius: 10px; cursor: pointer; margin-right: 10px; }
+        .btn-copiar { background: #27ae60; }
+        .btn-danger { background: #e74c3c; }
+        .user-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+        .hijos-list { margin: 20px 0; }
+        .hijo-card { background: #f0f8ff; padding: 15px; border-radius: 12px; margin-bottom: 10px; cursor: pointer; border-left: 4px solid #00d2ff; transition: all 0.3s; }
+        .hijo-card:hover { transform: translateX(5px); }
+        .hijo-card.active { background: linear-gradient(135deg, #0066CC, #00d2ff); color: white; }
+        .link-invitacion { background: #f0f8ff; padding: 15px; border-radius: 12px; margin: 20px 0; }
+        .link-invitacion input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin-top: 10px; }
+        #map { height: 400px; border-radius: 15px; margin: 20px 0; }
+        .alertas-list { max-height: 200px; overflow-y: auto; margin: 15px 0; }
+        .alerta-item { background: #fee; border-left: 4px solid #e74c3c; padding: 10px; margin-bottom: 8px; border-radius: 8px; }
+        .notificacion { position: fixed; bottom: 20px; right: 20px; background: white; padding: 12px 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; border-left: 4px solid #00d68f; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="user-info">
+            <h1><i class="fas fa-shield-alt"></i> Panel Parental</h1>
+            <div>
+                <span id="padreNombre" style="margin-right: 15px;"><i class="fas fa-user"></i> Cargando...</span>
+                <button class="btn" onclick="actualizarTodo()"><i class="fas fa-sync-alt"></i> Actualizar</button>
+                <button class="btn btn-danger" onclick="cerrarSesion()"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
+            </div>
+        </div>
+
+        <div id="hijosList" class="hijos-list"><p>Cargando hijos...</p></div>
+
+        <div id="linkContainer" class="link-invitacion" style="display: none;">
+            <h4><i class="fas fa-link"></i> Link de invitación para tu hijo</h4>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <input type="text" id="linkInvitacion" readonly style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                <button onclick="copiarLink()" class="btn btn-copiar" style="padding: 10px 15px;"><i class="fas fa-copy"></i> Copiar</button>
+            </div>
+            <small>Comparte este link con tu hijo. Al hacer clic, se registrará automáticamente vinculado a ti.</small>
+        </div>
+
+        <div id="map"></div>
+        <div id="ubicacionInfo" class="info" style="display: none;"><i class="fas fa-map-marker-alt"></i> <span>Actualizando ubicación...</span></div>
+        
+        <h3><i class="fas fa-bell"></i> Alertas recientes</h3>
+        <div id="alertasList" class="alertas-list"><p>Sin alertas recientes</p></div>
+    </div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="parents.js"></script>
+</body>
+</html>

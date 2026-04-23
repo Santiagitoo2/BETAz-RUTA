@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📝 Registro - Rutas Seguras</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0066CC 0%, #00d2ff 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .register-container {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 550px;
+            margin: 0 auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .logo { text-align: center; margin-bottom: 30px; }
+        .logo i { font-size: 60px; background: linear-gradient(135deg, #0066CC, #00d2ff); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+        .logo h1 { font-size: 24px; color: #0066CC; }
+        .logo p { color: #7f8c8d; font-size: 14px; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #2c3e50; }
+        .form-group input { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 15px; transition: all 0.3s; }
+        .form-group input:focus { outline: none; border-color: #00d2ff; }
+        .tipo-usuario { display: flex; gap: 15px; margin-bottom: 20px; }
+        .tipo-btn { flex: 1; padding: 12px; background: #ecf0f1; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+        .tipo-btn.active { background: linear-gradient(135deg, #0066CC, #00d2ff); color: white; }
+        .btn-register { width: 100%; padding: 14px; background: linear-gradient(135deg, #0066CC, #00d2ff); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px; }
+        .login-link { text-align: center; margin-top: 20px; color: #7f8c8d; }
+        .login-link a { color: #00d2ff; text-decoration: none; }
+        .codigo-container { background: #f0f8ff; padding: 15px; border-radius: 12px; margin: 15px 0; text-align: center; }
+        .colegio-search { position: relative; }
+        .colegio-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-radius: 10px; max-height: 200px; overflow-y: auto; z-index: 100; display: none; }
+        .colegio-item { padding: 10px; cursor: pointer; transition: background 0.2s; }
+        .colegio-item:hover { background: #f0f8ff; }
+        .notificacion { position: fixed; bottom: 20px; right: 20px; background: white; padding: 12px 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; border-left: 4px solid #00d68f; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="logo">
+            <i class="fas fa-shield-alt"></i>
+            <h1>Crear Cuenta</h1>
+            <p>Únete a la red de seguridad escolar de Ecuador</p>
+        </div>
+        <div class="tipo-usuario">
+            <button class="tipo-btn active" data-tipo="padre">👨‍👩‍👧 Soy Padre/Madre</button>
+            <button class="tipo-btn" data-tipo="hijo">👦 Soy Estudiante</button>
+        </div>
+        <form id="registerForm">
+            <div class="form-group">
+                <label><i class="fas fa-user"></i> Nombre completo</label>
+                <input type="text" id="nombre" required placeholder="Ej: Juan Pérez">
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-envelope"></i> Correo electrónico</label>
+                <input type="email" id="email" required placeholder="tu@email.com">
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-school"></i> Unidad Educativa</label>
+                <div class="colegio-search">
+                    <input type="text" id="unidadEducativa" placeholder="Busca tu colegio..." autocomplete="off">
+                    <div id="colegioList" class="colegio-list"></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-phone"></i> Teléfono (opcional)</label>
+                <input type="tel" id="telefono" placeholder="099 123 4567">
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-lock"></i> Contraseña</label>
+                <input type="password" id="password" required placeholder="Mínimo 6 caracteres">
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-check-circle"></i> Confirmar contraseña</label>
+                <input type="password" id="confirmPassword" required placeholder="Repite tu contraseña">
+            </div>
+            <div id="codigoSection" style="display: none;">
+                <div class="codigo-container">
+                    <i class="fas fa-link"></i>
+                    <p>Vinculación automática detectada</p>
+                    <input type="text" id="codigoInvitacion" placeholder="Código de invitación" style="margin-top: 10px;">
+                </div>
+            </div>
+            <button type="submit" class="btn-register"><i class="fas fa-user-plus"></i> Registrarse</button>
+        </form>
+        <div class="login-link">¿Ya tienes cuenta? <a href="login.html">Iniciar Sesión</a></div>
+    </div>
+    <script>
+        const colegiosEcuador = [
+            "Unidad Educativa Mahanaym", "Colegio San Francisco de Asís", "Unidad Educativa San José La Salle",
+            "Colegio Técnico Sangolquí", "Unidad Educativa Particular Rumiñahui", "Colegio Nacional Rumiñahui",
+            "Unidad Educativa Bilingüe Intercultural", "Colegio Militar Eloy Alfaro", "Unidad Educativa Santo Domingo de Guzmán"
+        ];
+
+        function mostrarNotificacion(mensaje, tipo) {
+            const notificacion = document.createElement('div');
+            notificacion.className = 'notificacion';
+            notificacion.style.borderLeftColor = tipo === 'success' ? '#00d68f' : '#e74c3c';
+            notificacion.innerHTML = `<i class="fas ${tipo === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'}"></i> ${mensaje}`;
+            document.body.appendChild(notificacion);
+            setTimeout(() => notificacion.remove(), 3000);
+        }
+
+        function getCodigoInvitacionFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('codigo');
+        }
+
+        let tipoUsuario = 'padre';
+        const codigoURL = getCodigoInvitacionFromURL();
+
+        document.querySelectorAll('.tipo-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tipo-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                tipoUsuario = btn.dataset.tipo;
+                const codigoSection = document.getElementById('codigoSection');
+                if (tipoUsuario === 'hijo') {
+                    codigoSection.style.display = 'block';
+                } else {
+                    codigoSection.style.display = 'none';
+                }
+            });
+        });
+
+        if (codigoURL) {
+            document.getElementById('codigoInvitacion').value = codigoURL;
+            document.getElementById('codigoInvitacion').disabled = true;
+            document.querySelector('.tipo-btn[data-tipo="hijo"]').click();
+            mostrarNotificacion('✅ Vinculación automática detectada. Completa tus datos.', 'success');
+        }
+
+        const colegioInput = document.getElementById('unidadEducativa');
+        const colegioList = document.getElementById('colegioList');
+
+        colegioInput.addEventListener('input', () => {
+            const valor = colegioInput.value.toLowerCase();
+            const filtrados = colegiosEcuador.filter(c => c.toLowerCase().includes(valor));
+            if (filtrados.length > 0 && valor.length > 0) {
+                colegioList.style.display = 'block';
+                colegioList.innerHTML = filtrados.map(c => `<div class="colegio-item" onclick="seleccionarColegio('${c.replace(/'/g, "\\'")}')">${c}</div>`).join('');
+            } else {
+                colegioList.style.display = 'none';
+            }
+        });
+
+        function seleccionarColegio(nombre) { colegioInput.value = nombre; colegioList.style.display = 'none'; }
+        document.addEventListener('click', (e) => {
+            if (!colegioInput.contains(e.target) && !colegioList.contains(e.target)) colegioList.style.display = 'none';
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            if (password !== confirmPassword) { alert('❌ Las contraseñas no coinciden'); return; }
+            if (password.length < 6) { alert('❌ La contraseña debe tener al menos 6 caracteres'); return; }
+            const colegio = document.getElementById('unidadEducativa').value;
+            if (!colegio) { alert('❌ Por favor selecciona tu unidad educativa'); return; }
+            
+            let codigoInvitacion = null;
+            if (tipoUsuario === 'padre') codigoInvitacion = Math.random().toString(36).substring(2, 8).toUpperCase();
+            
+            const nuevoUsuario = {
+                id: Date.now(), nombre: document.getElementById('nombre').value, email: document.getElementById('email').value,
+                unidadEducativa: colegio, telefono: document.getElementById('telefono').value, password: password,
+                tipo: tipoUsuario, fechaRegistro: new Date().toISOString(), hijosVinculados: [], padreVinculado: null,
+                codigoInvitacion: codigoInvitacion, ubicacion: null, ultimaConexion: new Date().toISOString()
+            };
+            
+            let usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
+            
+            if (tipoUsuario === 'hijo') {
+                let codigo = document.getElementById('codigoInvitacion').value;
+                if (!codigo && codigoURL) codigo = codigoURL;
+                if (!codigo) { alert('❌ Necesitas el código de invitación de tus padres'); return; }
+                const padre = usuarios.find(u => u.tipo === 'padre' && u.codigoInvitacion === codigo.toUpperCase());
+                if (!padre) { alert('❌ Código de invitación inválido'); return; }
+                nuevoUsuario.padreVinculado = padre.id;
+                const padreIndex = usuarios.findIndex(u => u.id === padre.id);
+                if (padreIndex !== -1) {
+                    if (!usuarios[padreIndex].hijosVinculados) usuarios[padreIndex].hijosVinculados = [];
+                    usuarios[padreIndex].hijosVinculados.push(nuevoUsuario.id);
+                }
+            }
+            
+            usuarios.push(nuevoUsuario);
+            localStorage.setItem('usuarios', JSON.stringify(usuarios));
+            
+            if (tipoUsuario === 'padre') {
+                const linkCompleto = `${window.location.origin}${window.location.pathname}?codigo=${codigoInvitacion}`.replace('register.html', 'register.html');
+                alert(`✅ Registro exitoso!\n\nTu código de invitación: ${codigoInvitacion}\n\nLink para compartir con tu hijo:\n${linkCompleto}\n\nTu hijo solo necesita hacer clic en el link y registrar sus datos.`);
+            } else {
+                alert('✅ Registro exitoso! Ahora puedes iniciar sesión');
+            }
+            window.location.href = 'login.html';
+        });
+    </script>
+</body>
+</html>

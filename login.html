@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔐 Iniciar Sesión - Rutas Seguras</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0066CC 0%, #00d2ff 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .login-container {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .logo { text-align: center; margin-bottom: 30px; }
+        .logo i { font-size: 60px; background: linear-gradient(135deg, #0066CC, #00d2ff); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+        .logo h1 { font-size: 28px; color: #0066CC; margin-top: 10px; }
+        .logo p { color: #7f8c8d; font-size: 14px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #2c3e50; }
+        .form-group input { width: 100%; padding: 14px; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 16px; transition: all 0.3s; }
+        .form-group input:focus { outline: none; border-color: #00d2ff; box-shadow: 0 0 0 3px rgba(0,210,255,0.1); }
+        .btn-login { width: 100%; padding: 14px; background: linear-gradient(135deg, #0066CC, #00d2ff); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0,102,204,0.4); }
+        .register-link { text-align: center; margin-top: 20px; color: #7f8c8d; }
+        .register-link a { color: #00d2ff; text-decoration: none; font-weight: 600; }
+        .error-message { background: #fee; color: #e74c3c; padding: 12px; border-radius: 10px; margin-bottom: 20px; display: none; }
+        .tipo-usuario { display: flex; gap: 15px; margin-bottom: 20px; }
+        .tipo-btn { flex: 1; padding: 12px; background: #ecf0f1; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+        .tipo-btn.active { background: linear-gradient(135deg, #0066CC, #00d2ff); color: white; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <i class="fas fa-shield-alt"></i>
+            <h1>Rutas Seguras</h1>
+            <p>Red de seguridad escolar de Ecuador</p>
+        </div>
+        <div id="errorMessage" class="error-message"></div>
+        <div class="tipo-usuario">
+            <button class="tipo-btn active" data-tipo="padre">👨‍👩‍👧 Soy Padre/Madre</button>
+            <button class="tipo-btn" data-tipo="hijo">👦 Soy Estudiante</button>
+        </div>
+        <form id="loginForm">
+            <div class="form-group">
+                <label><i class="fas fa-envelope"></i> Correo electrónico</label>
+                <input type="email" id="email" required placeholder="tu@email.com">
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-lock"></i> Contraseña</label>
+                <input type="password" id="password" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn-login"><i class="fas fa-arrow-right"></i> Iniciar Sesión</button>
+        </form>
+        <div class="register-link">¿No tienes cuenta? <a href="register.html">Regístrate aquí</a></div>
+    </div>
+    <script>
+        let tipoUsuario = 'padre';
+        document.querySelectorAll('.tipo-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tipo-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                tipoUsuario = btn.dataset.tipo;
+            });
+        });
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
+            const usuario = usuarios.find(u => u.email === email && u.password === password);
+            if (usuario) {
+                localStorage.setItem('usuarioActual', JSON.stringify(usuario));
+                if (usuario.tipo === 'padre') window.location.href = 'parents-dashboard.html';
+                else window.location.href = 'index.html';
+            } else {
+                const errorDiv = document.getElementById('errorMessage');
+                errorDiv.textContent = '❌ Correo o contraseña incorrectos';
+                errorDiv.style.display = 'block';
+                setTimeout(() => errorDiv.style.display = 'none', 3000);
+            }
+        });
+    </script>
+</body>
+</html>
